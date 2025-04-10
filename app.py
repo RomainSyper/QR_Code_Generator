@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, send_from_directory
 import qrcode
 import os
+from fpdf import FPDF  # Pour générer le PDF
 
 app = Flask(__name__)
 
@@ -12,27 +13,45 @@ if not os.path.exists('static'):
 def index():
     error = None
     qr_code_path = None  # Pour stocker le chemin du QR Code généré
+    pdf_path = None  # Pour stocker le chemin du PDF généré
+
     if request.method == 'POST':
-        texte = request.form.get('texte')  # On récupère le texte entré par l'utilisateur
+        input_value = request.form.get('input_value')  # On récupère soit le texte soit l'URL
 
-        if texte:  # Si du texte a été soumis
+        if input_value:  # Si quelque chose a été soumis (texte ou URL)
             try:
-                # Créer le QR code avec du texte (le texte est encodé directement)
-                qr = qrcode.make(texte)  # Créer le QR code à partir du texte
-                qr_code_filename = 'qrcode.png'
-                qr_path = os.path.join('static', qr_code_filename)
-                qr.save(qr_path)
+                if input_value.startswith('http://') or input_value.startswith('https://'):
+                    # Cas où l'utilisateur entre un lien (URL)
+                    qr = qrcode.make(input_value)  # Créer le QR code avec l'URL
+                    qr_code_filename = 'qrcode.png'
+                    qr_path = os.path.join('static', qr_code_filename)
+                    qr.save(qr_path)
+                    qr_code_path = qr_code_filename
+                else:
+                    # Cas où l'utilisateur entre du texte
+                    qr = qrcode.make(input_value)  # Créer un QR code avec le texte
+                    qr_code_filename = 'qrcode.png'
+                    qr_path = os.path.join('static', qr_code_filename)
+                    qr.save(qr_path)
+                    qr_code_path = qr_code_filename
 
-                # Le chemin du QR code sera utilisé pour l'affichage et le téléchargement
-                qr_code_path = qr_code_filename
+                    # Créer le PDF avec le texte
+                    pdf = FPDF()
+                    pdf.add_page()
+                    pdf.set_font("Arial", size=12)
+                    pdf.multi_cell(0, 10, input_value)  # Ajouter du texte sur le PDF
+                    pdf_filename = 'texte.pdf'
+                    pdf_path = os.path.join('static', pdf_filename)
+                    pdf.output(pdf_path)
 
-                return render_template('index.html', qr_code=qr_code_path)
+                return render_template('index.html', qr_code=qr_code_path, pdf_file=pdf_path)
+
             except Exception as e:
-                error = f"Erreur lors de la génération du QR code : {e}"
+                error = f"Erreur lors de la génération du QR code ou du PDF : {e}"
         else:
-            error = "Le texte ne peut pas être vide."
+            error = "Le champ ne peut pas être vide."
 
-    return render_template('index.html', error=error, qr_code=qr_code_path)
+    return render_template('index.html', error=error, qr_code=qr_code_path, pdf_file=pdf_path)
 
 @app.route('/download/<filename>')
 def download(filename):
