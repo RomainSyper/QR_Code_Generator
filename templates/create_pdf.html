@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Créer un PDF</title>
+    <title>Création de PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -14,49 +14,44 @@
         h1 {
             color: #333;
         }
-        textarea, input, button {
+        .form-container {
+            display: flex;
+            flex-direction: column;
+            width: 300px;
+            margin: 0 auto;
+        }
+        input, textarea, button {
             padding: 10px;
             font-size: 1rem;
             margin-top: 10px;
-            width: 100%;
-            max-width: 500px;
         }
-        .download-btn {
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+        .error {
+            color: red;
             margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .download-btn:hover {
-            background-color: #45a049;
         }
     </style>
 </head>
 <body>
 
-    <h1>Créer un PDF</h1>
+    <h1>Création de votre PDF</h1>
 
-    <form action="/pdf" method="POST">
-        <input type="text" name="title" placeholder="Titre du document (facultatif)">
-        <textarea name="text" placeholder="Entrez le texte pour le PDF" rows="4" cols="50"></textarea>
-        <button type="submit">Générer le PDF</button>
-    </form>
-
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
-
-    {% if pdf_filename %}
-        <div class="pdf-result">
-            <h2>PDF généré</h2>
-            <a href="{{ url_for('download', filename=pdf_filename) }}">
-                <button class="download-btn">Télécharger le PDF</button>
-            </a>
-        </div>
-    {% endif %}
+    <div class="form-container">
+        <form action="/pdf" method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Titre du document (facultatif)">
+            <textarea name="text" placeholder="Écrivez votre texte ici..."></textarea>
+            <input type="text" name="lat" placeholder="Latitude">
+            <input type="text" name="lon" placeholder="Longitude">
+            <input type="file" name="photo">
+            <button type="submit">Générer le PDF</button>
+        </form>
+        {% if error %}
+            <div class="error">{{ error }}</div>
+        {% endif %}
+    </div>
 
 </body>
 </html>
