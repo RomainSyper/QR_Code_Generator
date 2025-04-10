@@ -17,7 +17,7 @@
         .form-container {
             display: flex;
             flex-direction: column;
-            width: 300px;
+            width: 500px;
             margin: 0 auto;
         }
         input, textarea, button {
@@ -26,14 +26,60 @@
             margin-top: 10px;
         }
         textarea {
-            height: 100px;
+            height: 150px;
             resize: vertical;
+        }
+        .form-container label {
+            font-size: 1.2rem;
+        }
+        .map-container {
+            width: 100%;
+            height: 400px;
+            margin-top: 20px;
         }
         .error {
             color: red;
             margin-top: 10px;
         }
     </style>
+    <script src="https://maps.googleapis.com/maps/api/js?key=VOTRE_API_KEY&callback=initMap&libraries=places" async defer></script>
+    <script>
+        let map;
+        let marker;
+
+        // Fonction pour initialiser la carte
+        function initMap() {
+            const initialPos = { lat: 48.8566, lng: 2.3522 }; // Paris comme position initiale
+
+            map = new google.maps.Map(document.getElementById("map"), {
+                center: initialPos,
+                zoom: 13,
+            });
+
+            // Placer un marker au clic sur la carte
+            google.maps.event.addListener(map, 'click', function(event) {
+                placeMarker(event.latLng);
+            });
+
+            // Créer un marqueur
+            marker = new google.maps.Marker({
+                position: initialPos,
+                map: map,
+                draggable: true
+            });
+        }
+
+        // Fonction pour placer un marqueur et mettre à jour les champs lat/lng
+        function placeMarker(location) {
+            marker.setPosition(location);
+
+            // Mettre à jour les champs lat/lng
+            const lat = location.lat();
+            const lng = location.lng();
+            document.getElementById("lat").value = lat;
+            document.getElementById("lon").value = lng;
+        }
+    </script>
 </head>
 <body>
 
@@ -41,11 +87,24 @@
 
     <div class="form-container">
         <form action="/pdf" method="POST" enctype="multipart/form-data">
-            <input type="text" name="title" placeholder="Titre du document (facultatif)">
-            <textarea name="text" placeholder="Écrivez votre texte ici..."></textarea>
-            <input type="text" name="lat" placeholder="Latitude">
-            <input type="text" name="lon" placeholder="Longitude">
-            <input type="file" name="photo">
+            <label for="title">Titre du document (facultatif) :</label>
+            <input type="text" id="title" name="title" placeholder="Titre du document">
+
+            <label for="text">Votre texte :</label>
+            <textarea name="text" id="text" placeholder="Écrivez votre texte ici..."></textarea>
+
+            <label for="lat">Latitude :</label>
+            <input type="text" name="lat" id="lat" placeholder="Latitude" readonly>
+
+            <label for="lon">Longitude :</label>
+            <input type="text" name="lon" id="lon" placeholder="Longitude" readonly>
+
+            <label for="photo">Ajouter une photo :</label>
+            <input type="file" name="photo" id="photo">
+
+            <!-- Carte Google Maps -->
+            <div id="map" class="map-container"></div>
+
             <button type="submit">Générer le PDF</button>
         </form>
         {% if error %}
