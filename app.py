@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, send_from_directory
+from flask import Flask, render_template, request, send_from_directory, redirect, url_for
 import os
 import qrcode
 from fpdf import FPDF
@@ -10,17 +10,16 @@ app = Flask(__name__)
 if not os.path.exists('static'):
     os.makedirs('static')
 
-@app.route('/', methods=['GET', 'POST'])
+@app.route('/')
 def index():
+    return render_template('index.html')
+
+@app.route('/qr', methods=['GET', 'POST'])
+def qr_code():
     error = None
     qr_code_path = None
-    pdf_filename = None
-
     if request.method == 'POST':
         url = request.form.get('url')  # Pour QR code
-        text = request.form.get('text')  # Pour le PDF avec texte
-        title = request.form.get('title')  # Titre du PDF (optionnel)
-
         if url:  # Générer QR Code à partir d'un lien
             try:
                 qr = qrcode.make(url)
@@ -30,10 +29,19 @@ def index():
                 qr_code_path = qr_code_filename
             except Exception as e:
                 error = f"Erreur lors de la génération du QR code : {e}"
+    return render_template('qr_code.html', error=error, qr_code=qr_code_path)
 
-        if text:  # Générer un PDF à partir du texte
+@app.route('/pdf', methods=['GET', 'POST'])
+def create_pdf():
+    error = None
+    pdf_filename = None
+    if request.method == 'POST':
+        text = request.form.get('text')  # Pour le PDF avec texte
+        title = request.form.get('title')  # Titre du PDF (facultatif)
+
+        # Création du PDF avec le texte
+        if text:
             try:
-                # Création du PDF avec le texte
                 pdf = FPDF()
                 pdf.add_page()
                 pdf.set_font("Arial", size=12)
@@ -55,7 +63,7 @@ def index():
             except Exception as e:
                 error = f"Erreur lors de la génération du PDF : {e}"
 
-    return render_template('index.html', error=error, qr_code=qr_code_path, pdf_filename=pdf_filename)
+    return render_template('create_pdf.html', error=error, pdf_filename=pdf_filename)
 
 @app.route('/download/<filename>')
 def download(filename):

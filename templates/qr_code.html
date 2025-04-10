@@ -1,0 +1,62 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Générer un QR Code</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            padding: 50px;
+            background-color: #f4f4f9;
+        }
+        h1 {
+            color: #333;
+        }
+        input, button {
+            padding: 10px;
+            font-size: 1rem;
+            margin-top: 10px;
+        }
+        .qr-code {
+            margin-top: 20px;
+        }
+        .download-btn {
+            margin-top: 10px;
+            padding: 10px 20px;
+            font-size: 1rem;
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+        .download-btn:hover {
+            background-color: #45a049;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>Générer un QR Code</h1>
+    
+    <form action="/qr" method="POST">
+        <input type="text" name="url" placeholder="Entrez l'URL" required>
+        <button type="submit">Générer le QR Code</button>
+    </form>
+
+    {% if error %}
+        <div class="error">{{ error }}</div>
+    {% endif %}
+
+    {% if qr_code %}
+        <div class="qr-code">
+            <img src="{{ url_for('static', filename=qr_code) }}" alt="QR Code">
+            <a href="{{ url_for('download', filename=qr_code) }}">
+                <button class="download-btn">Télécharger le QR Code</button>
+            </a>
+        </div>
+    {% endif %}
+
+</body>
+</html>

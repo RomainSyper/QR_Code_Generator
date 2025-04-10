@@ -3,95 +3,41 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de QR Code et PDF</title>
+    <title>Accueil - Générateur QR Code et PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            margin: 0;
+            text-align: center;
+            padding: 50px;
             background-color: #f4f4f9;
         }
         h1 {
             color: #333;
         }
-        .form-container {
-            margin-bottom: 20px;
-        }
-        input, textarea, button {
-            padding: 10px;
-            font-size: 1rem;
-            margin-top: 10px;
-        }
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-        .qr-code, .pdf-result {
-            margin-top: 20px;
-        }
-        .download-btn {
-            margin-top: 10px;
+        .btn {
             padding: 10px 20px;
-            font-size: 1rem;
+            font-size: 1.2rem;
+            margin-top: 20px;
             background-color: #4CAF50;
             color: white;
             border: none;
             cursor: pointer;
+            text-decoration: none;
         }
-        .download-btn:hover {
+        .btn:hover {
             background-color: #45a049;
         }
     </style>
 </head>
 <body>
 
-    <h1>Générateur de QR Code et PDF</h1>
-
-    <div class="form-container">
-        <!-- Formulaire pour générer QR Code ou PDF -->
-        <form action="/" method="POST">
-            <div>
-                <label for="url">Entrez l'URL pour générer le QR Code :</label>
-                <input type="text" name="url" placeholder="URL" required>
-            </div>
-            <div>
-                <label for="title">Titre du document (facultatif) :</label>
-                <input type="text" name="title" placeholder="Titre du PDF">
-            </div>
-            <div>
-                <label for="text">Entrez le texte pour générer un PDF :</label>
-                <textarea name="text" placeholder="Texte du PDF" rows="4" cols="50"></textarea>
-            </div>
-            <button type="submit">Générer</button>
-        </form>
+    <h1>Bienvenue sur le Générateur de QR Code et PDF</h1>
+    <div>
+        <a href="{{ url_for('qr_code') }}" class="btn">Générer un QR Code</a>
     </div>
-
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
-
-    {% if qr_code %}
-        <div class="qr-code">
-            <h2>QR Code généré</h2>
-            <img src="{{ url_for('static', filename=qr_code) }}" alt="QR Code">
-            <a href="{{ url_for('download', filename=qr_code) }}">
-                <button class="download-btn">Télécharger le QR Code</button>
-            </a>
-        </div>
-    {% endif %}
-
-    {% if pdf_filename %}
-        <div class="pdf-result">
-            <h2>PDF généré</h2>
-            <a href="{{ url_for('download', filename=pdf_filename) }}">
-                <button class="download-btn">Télécharger le PDF</button>
-            </a>
-        </div>
-    {% endif %}
+    <div>
+        <a href="{{ url_for('create_pdf') }}" class="btn">Créer un PDF</a>
+    </div>
 
 </body>
 </html>
