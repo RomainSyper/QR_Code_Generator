@@ -11,7 +11,7 @@ if not os.path.exists('static'):
 @app.route("/", methods=["GET", "POST"])
 def index():
     if request.method == "POST":
-        data = request.form.get("url")
+        data = request.form.get("url")  # Utilisation correcte du champ "url" du formulaire
         
         # Vérification si l'URL est valide
         if not data:
