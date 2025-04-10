@@ -14,22 +14,29 @@ def index():
     qr_code_path = None  # Pour stocker le chemin du QR Code généré
     if request.method == 'POST':
         url = request.form.get('url')  # Utilise get pour éviter une KeyError si 'url' n'est pas dans le form
+        texte = request.form.get('texte')  # Ajout du texte
+
         if url:  # Si une URL a bien été soumise
-            try:
-                # Créer le QR code
-                qr = qrcode.make(url)
-                qr_code_filename = 'qrcode.png'
-                qr_path = os.path.join('static', qr_code_filename)
-                qr.save(qr_path)
-
-                # Le chemin du QR code sera utilisé pour l'affichage et le téléchargement
-                qr_code_path = qr_code_filename
-
-                return render_template('index.html', qr_code=qr_code_path)
-            except Exception as e:
-                error = f"Erreur lors de la génération du QR code : {e}"
+            contenu = url
+        elif texte:  # Si du texte a été soumis
+            contenu = texte
         else:
-            error = "L'URL ne peut pas être vide."
+            error = "L'URL ou le texte ne peut pas être vide."
+            return render_template('index.html', error=error, qr_code=qr_code_path)
+
+        try:
+            # Créer le QR code
+            qr = qrcode.make(contenu)
+            qr_code_filename = 'qrcode.png'
+            qr_path = os.path.join('static', qr_code_filename)
+            qr.save(qr_path)
+
+            # Le chemin du QR code sera utilisé pour l'affichage et le téléchargement
+            qr_code_path = qr_code_filename
+
+            return render_template('index.html', qr_code=qr_code_path)
+        except Exception as e:
+            error = f"Erreur lors de la génération du QR code : {e}"
 
     return render_template('index.html', error=error, qr_code=qr_code_path)
 
