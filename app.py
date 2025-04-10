@@ -25,7 +25,7 @@ def index():
             return render_template('index.html', error=error, qr_code=qr_code_path)
 
         try:
-            # Créer le QR code
+            # Créer le QR code avec du texte ou une URL
             qr = qrcode.make(contenu)
             qr_code_filename = 'qrcode.png'
             qr_path = os.path.join('static', qr_code_filename)
