@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Générateur de QR Code</title>
+    <title>Générateur de QR Code et PDF</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -18,69 +18,45 @@
         h1 {
             color: #333;
         }
-        input, button {
+        input, textarea, button {
             padding: 10px;
             font-size: 1rem;
             margin-top: 10px;
         }
-        .error {
-            color: red;
-            margin-top: 10px;
-        }
-        .qr-code {
-            margin-top: 20px;
-        }
-        .download-btn {
-            margin-top: 10px;
-            padding: 10px 20px;
-            font-size: 1rem;
-            background-color: #4CAF50;
-            color: white;
-            border: none;
-            cursor: pointer;
-        }
-        .download-btn:hover {
-            background-color: #45a049;
-        }
-        textarea {
-            width: 300px;
-            height: 150px;
-            margin-top: 10px;
-            padding: 10px;
-            resize: vertical;
+        .section {
+            margin-bottom: 30px;
         }
     </style>
 </head>
 <body>
 
-    <h1>Générateur de QR Code</h1>
-    
-    <form action="/" method="POST">
-        <input type="text" name="url" placeholder="Entrez l'URL (lien)" />
-        <textarea name="text" placeholder="Entrez du texte pour le QR Code"></textarea>
-        <button type="submit">Générer le QR Code</button>
-    </form>
+    <h1>Générateur de QR Code et PDF</h1>
 
-    {% if error %}
-        <div class="error">{{ error }}</div>
-    {% endif %}
+    <!-- Onglet Lien -->
+    <div class="section">
+        <h2>Générer un QR Code</h2>
+        <form action="/generate_qr" method="POST">
+            <input type="text" name="url" placeholder="Entrez l'URL" required>
+            <button type="submit">Générer le QR Code</button>
+        </form>
+    </div>
 
-    {% if qr_code %}
-        <div class="qr-code">
-            <img src="{{ url_for('static', filename=qr_code) }}" alt="QR Code">
-            <a href="{{ url_for('download', filename=qr_code) }}">
-                <button class="download-btn">Télécharger le QR Code</button>
-            </a>
-        </div>
-    {% endif %}
-
-    {% if pdf_file %}
-        <div class="qr-code">
-            <a href="{{ url_for('download', filename=pdf_file) }}">
-                <button class="download-btn">Télécharger le PDF</button>
-            </a>
-        </div>
-    {% endif %}
+    <!-- Onglet Création -->
+    <div class="section">
+        <h2>Création de PDF</h2>
+        <form action="/generate_pdf" method="POST" enctype="multipart/form-data">
+            <input type="text" name="title" placeholder="Titre du document (facultatif)">
+            <textarea name="text" placeholder="Entrez le texte ici (facultatif)" rows="5" cols="50"></textarea>
+            <br>
+            <input type="text" name="location" placeholder="Localisation (facultatif)">
+            <br>
+            <input type="file" name="photo" accept="image/*">
+            <br>
+            <input type="text" name="map_location" placeholder="Coordonnées (latitude, longitude)">
+            <br>
+            <button type="submit">Générer le PDF</button>
+        </form>
+    </div>
 
 </body>
 </html>
